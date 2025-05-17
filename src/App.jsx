@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { auth } from "./config";
 import { Button } from "./components/ui/button";
 import { LogOutIcon } from "lucide-react";
-import Actions from "./components/Banking";
+import Actions from "./components/banking"; // ✅ lowercase to match filename
 import { Toaster } from "react-hot-toast";
 import DepositTable from "./components/depositTable";
 import WithdrawalTable from "./components/withdrawalTable";
@@ -14,6 +14,8 @@ import Graph from "./components/Graph";
 export default function App() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+
+  const [refreshFlag, setRefreshFlag] = useState(0); // ✅ Shared refresh flag
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,14 +26,13 @@ export default function App() {
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [navigate]);
 
   function signOutHandler() {
     signOut(auth)
       .then(() => navigate("/sign-in"))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }
 
   return (
@@ -51,13 +52,21 @@ export default function App() {
 
         <div className="mx-auto md:w-[950px] flex flex-col md:flex-row gap-4 mt-[17px] space-y-5 md:space-y-0">
           <div className="flex flex-col space-y-6 mx-4 md:w-2/3">
-            <WithdrawalTable userId={user?.uid} />
+            <WithdrawalTable
+              userId={user?.uid}
+              withdrawalRefreshFlag={refreshFlag}
+              setWithdrawalRefreshFlag={setRefreshFlag}
+            />
             <hr />
-            <DepositTable userId={user?.uid} />
+            <DepositTable
+              userId={user?.uid}
+              setWithdrawalRefreshFlag={setRefreshFlag}
+            />
           </div>
 
           <div className="mt-4 md:mt-0 md:w-1/3">
-            <Graph userId={user?.uid} />
+            {/* ✅ Re-render Graph when flag changes */}
+            <Graph userId={user?.uid} key={refreshFlag} />
           </div>
         </div>
       </div>
