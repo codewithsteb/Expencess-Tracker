@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { ModeToggle } from "./components/mode-toggle";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom"; // ✅ FIXED
 import { auth } from "./config";
 import { Button } from "./components/ui/button";
 import { LogOutIcon } from "lucide-react";
-import Actions from "./components/banking"; // ✅ lowercase to match filename
+import Actions from "./components/banking";
 import { Toaster } from "react-hot-toast";
 import DepositTable from "./components/depositTable";
 import WithdrawalTable from "./components/withdrawalTable";
@@ -14,8 +14,7 @@ import Graph from "./components/Graph";
 export default function App() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-
-  const [refreshFlag, setRefreshFlag] = useState(0); // ✅ Shared refresh flag
+  const [refreshFlag, setRefreshFlag] = useState(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -65,7 +64,6 @@ export default function App() {
           </div>
 
           <div className="mt-4 md:mt-0 md:w-1/3">
-            {/* ✅ Re-render Graph when flag changes */}
             <Graph userId={user?.uid} key={refreshFlag} />
           </div>
         </div>
